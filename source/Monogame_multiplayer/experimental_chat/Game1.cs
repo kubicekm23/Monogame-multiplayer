@@ -1,19 +1,13 @@
-﻿using experimental_chat;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace _01_Monogame_multiplayer_game;
+namespace experimental_chat;
 
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
-    private Server _server;
-    private Client _client;
-
-    private bool _LocalServer = true;   // podle toho jestli tento počítač bude server
-    private string _serverPassword = "HesloHeslo";
 
     public Game1()
     {
@@ -24,9 +18,8 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        if (_LocalServer) _server = new Server(_serverPassword);
-        else _client = new Client(_serverPassword);
-        
+        // TODO: Add your initialization logic here
+
         base.Initialize();
     }
 
@@ -41,10 +34,7 @@ public class Game1 : Game
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             Keyboard.GetState().IsKeyDown(Keys.Escape))
-        {
             Exit();
-            if (_LocalServer) _server.EndServer();
-        }
 
         // TODO: Add your update logic here
 
