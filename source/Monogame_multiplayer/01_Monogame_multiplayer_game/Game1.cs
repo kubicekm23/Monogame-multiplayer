@@ -12,8 +12,9 @@ public class Game1 : Game
     private Server _server;
     private Client _client;
 
-    private bool _LocalServer = true;   // podle toho jestli tento počítač bude server
+    private bool _localServer = true;   // podle toho jestli tento počítač bude server
     private string _serverPassword = "HesloHeslo";
+    private string _serverIP = "127.0.0.1";
 
     public Game1()
     {
@@ -24,8 +25,8 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        if (_LocalServer) _server = new Server(_serverPassword);
-        else _client = new Client(_serverPassword);
+        if (_localServer) _server = new Server(_serverPassword);
+        else _client = new Client(_serverPassword, _serverIP);
         
         base.Initialize();
     }
@@ -43,7 +44,8 @@ public class Game1 : Game
             Keyboard.GetState().IsKeyDown(Keys.Escape))
         {
             Exit();
-            if (_LocalServer) _server.EndServer();
+            if (_localServer) _server.StopServer();
+            else _client.StopClient();
         }
 
         // TODO: Add your update logic here
