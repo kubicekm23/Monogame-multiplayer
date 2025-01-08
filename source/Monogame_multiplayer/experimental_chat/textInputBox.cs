@@ -27,12 +27,21 @@ public class textInputBox
     public void Draw(SpriteBatch spriteBatch)
     {
         spriteBatch.Draw(_texture, _rectangle, Color.White);
-        spriteBatch.DrawString(_font, _text, _position, Color.Black);
+
+        if (_text != null)
+        {
+            spriteBatch.DrawString(_font, _text, _position, Color.Black);
+        }
     }
 
     public void UpdateText(string textToAdd)
     {
         _text += textToAdd;
+    }
+
+    public void DelLetter()
+    {
+        _text.Remove(_text.Length - 1, 1);
     }
 
     public string GetText()

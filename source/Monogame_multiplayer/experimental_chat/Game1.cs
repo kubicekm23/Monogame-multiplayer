@@ -127,6 +127,7 @@ public class Game1 : Game
     {
         if (keyboardState.IsKeyDown(Keys.Enter)) { SendMessage(_inputBox.GetText()); }
         else {
+            if (keyboardState.IsKeyDown(Keys.Back)) { _inputBox.DelLetter(); }
             if (keyboardState.IsKeyDown(Keys.Space)) { _inputBox.UpdateText(" "); }
             if (keyboardState.IsKeyDown(Keys.Q)) { _inputBox.UpdateText("q"); }
             if (keyboardState.IsKeyDown(Keys.W)) { _inputBox.UpdateText("w"); }
