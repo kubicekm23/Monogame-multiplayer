@@ -13,9 +13,9 @@ public class Game1 : Game
     private Server _server;
     private Client _client;
 
-    private bool _localServer = false;   // podle toho jestli tento počítač bude server
+    private bool _localServer = true;   // podle toho jestli tento počítač bude server
     private string _serverPassword = "HesloHeslo";
-    private string _serverIP = "127.0.0.1";
+    private string _serverIP = "10.10.10.39";
     
     private textInputBox _inputBox;
     private SpriteFont _font;

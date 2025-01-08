@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using experimental_chat;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -8,8 +10,8 @@ public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
-    // private Server _server;
-    // private Client _client;
+    private Server _server;
+    private Client _client;
 
     private bool _localServer = false;   // podle toho jestli tento počítač bude server
     private string _serverPassword = "HesloHeslo";
@@ -20,12 +22,20 @@ public class Game1 : Game
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
+        
+        if (_localServer) { Window.Title = "Game server"; }
+        else {Window.Title = "Game client";}
+        
+        _graphics.PreferredBackBufferWidth = 1280;
+        _graphics.PreferredBackBufferHeight = 720;
+        
+        _graphics.ApplyChanges();
     }
 
     protected override void Initialize()
     {
-        // if (_localServer) _server = new Server(_serverPassword);
-        // else _client = new Client(_serverPassword, _serverIP);
+        if (_localServer) _server = new Server(_serverPassword);
+        else _client = new Client(_serverPassword, _serverIP);
         
         base.Initialize();
     }
@@ -39,10 +49,24 @@ public class Game1 : Game
 
     protected override void Update(GameTime gameTime)
     {
+        var KeyboardState = Keyboard.GetState();
+        
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             Keyboard.GetState().IsKeyDown(Keys.Escape))
         {
             Exit();
+        }
+        
+        try
+        {
+            if (_localServer)
+                _server?.Update();
+            else
+                _client?.Update();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Network error: {e.Message}");
         }
 
         base.Update(gameTime);
@@ -55,5 +79,15 @@ public class Game1 : Game
         // TODO: Add your drawing code here
 
         base.Draw(gameTime);
+    }
+    
+    protected override void UnloadContent()
+    {
+        if (_localServer) 
+            _server?.StopServer();
+        else 
+            _client?.StopClient();
+            
+        base.UnloadContent();
     }
 }
