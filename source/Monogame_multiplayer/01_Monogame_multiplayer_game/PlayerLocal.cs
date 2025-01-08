@@ -20,8 +20,9 @@ public class PlayerLocal
         _position = position;
         _velocity = Vector2.Zero;
         _acceleration = new Vector2(0.1f, 0.1f);
-        _friction = new Vector2(0.02f, 0.02f);
+        _friction = new Vector2(0.05f, 0.05f);
         
+        _texture = new Texture2D(graphicsDevice, 35, 35);
         Color[] colors = new Color[35 * 35];
 
         for (int i = 0; i < 35; i++)
@@ -43,6 +44,9 @@ public class PlayerLocal
     public void Move(Vector2 direction)
     {
         _velocity += _acceleration*direction;
+        
+        if (_velocity.X > 3) _velocity.X = 3;
+        if (_velocity.Y > 3) _velocity.Y = 3;
 
         if (_velocity.X > 0) { _velocity.X -= _friction.X; }
         else if (_velocity.X < 0) { _velocity.X += _friction.X; }

@@ -13,6 +13,9 @@ public class Game1 : Game
     private Client _client;
 
     private NetworkSettings _networkSettings;
+    
+    // players
+    private PlayerLocal _playerLocal;
 
     public Game1()
     {
@@ -36,6 +39,8 @@ public class Game1 : Game
         try { if (_networkSettings.IsServer) _server = new Server(_networkSettings.Password, _networkSettings.Port);else _client = new Client(_networkSettings.Password, _networkSettings.HostIP); }
         catch (Exception e) { Console.WriteLine($"Failed to initialize network: {e.Message}"); Exit(); }
         
+        _playerLocal = new PlayerLocal(new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2), GraphicsDevice);
+        
         base.Initialize();
     }
 
@@ -49,6 +54,7 @@ public class Game1 : Game
     protected override void Update(GameTime gameTime)
     {
         var KeyboardState = Keyboard.GetState();
+        Vector2 direction = Vector2.Zero;
         
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             Keyboard.GetState().IsKeyDown(Keys.Escape)) { Exit(); }
@@ -60,11 +66,12 @@ public class Game1 : Game
         }
         catch (Exception e) { Console.WriteLine($"Network error: {e.Message}"); }
 
-        // continue code from here
+        if (KeyboardState.IsKeyDown(Keys.W)) direction.Y = -1;
+        if (KeyboardState.IsKeyDown(Keys.S)) direction.Y = 1;
+        if (KeyboardState.IsKeyDown(Keys.A)) direction.X = -1;
+        if (KeyboardState.IsKeyDown(Keys.D)) direction.X = 1;
         
-        
-        
-        
+        _playerLocal.Move(direction);
         
         base.Update(gameTime);
     }
@@ -73,8 +80,10 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        // TODO: Add your drawing code here
-
+        _spriteBatch.Begin();
+        _playerLocal.Draw(_spriteBatch);
+        _spriteBatch.End();
+        
         base.Draw(gameTime);
     }
     
