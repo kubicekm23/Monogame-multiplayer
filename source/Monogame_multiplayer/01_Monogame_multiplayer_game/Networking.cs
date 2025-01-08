@@ -182,11 +182,12 @@ struct NetworkSettings
         }
         else
         {
-            string[] lines = File.ReadAllLines("NetworkSettings.txt");
+            string[] lines = File.ReadAllLines("network_settings.txt");
             HostIP = lines[0];
             Port = int.Parse(lines[1]);
             Password = lines[2];
-            if (lines[3] == "true") isServer = true;
+            Console.Write(lines[3]);
+            if (lines[3] == "true" || lines[3] == "True") isServer = true;
             else isServer = false;
         }
         
