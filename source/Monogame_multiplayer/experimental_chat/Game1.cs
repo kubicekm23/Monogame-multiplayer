@@ -12,10 +12,8 @@ public class Game1 : Game
     private SpriteBatch _spriteBatch;
     private Server _server;
     private Client _client;
-
-    private bool _localServer = true;   // podle toho jestli tento počítač bude server
-    private string _serverPassword = "HesloHeslo";
-    private string _serverIP = "10.10.10.39";
+    
+    private NetworkSettings _networkSettings;
     
     private textInputBox _inputBox;
     private SpriteFont _font;
@@ -25,8 +23,10 @@ public class Game1 : Game
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
+        
+        _networkSettings = new NetworkSettings("127.0.0.1", 9050, false, "Heslo");  // default hodnoty
 
-        if (_localServer) { Window.Title = "Chat server"; }
+        if (_networkSettings.IsServer) { Window.Title = "Chat server"; }
         else {Window.Title = "Chat client";}
         
         _graphics.PreferredBackBufferWidth = 1280;
@@ -39,10 +39,10 @@ public class Game1 : Game
     {
         try
         {
-            if (_localServer) 
-                _server = new Server(_serverPassword);
+            if (_networkSettings.IsServer) 
+                _server = new Server(_networkSettings.Password, _networkSettings.Port);
             else 
-                _client = new Client(_serverPassword, _serverIP);
+                _client = new Client(_networkSettings.Password, _networkSettings.HostIP);
         }
         catch (Exception e)
         {
@@ -70,14 +70,14 @@ public class Game1 : Game
             Keyboard.GetState().IsKeyDown(Keys.Escape))
         {
             Exit();
-            if (_localServer) _server.StopServer();
+            if (_networkSettings.IsServer) _server.StopServer();
             else _client.StopClient();
         }
 
         // Test zpráva
         if (KeyboardState.IsKeyDown(Keys.Space))
         {
-            if (_localServer)
+            if (_networkSettings.IsServer)
                 _server?.BroadcastMessage("Hello from server!");
             else
                 _client?.SendMessage("Hello from client!");
@@ -87,7 +87,7 @@ public class Game1 : Game
         
         try
         {
-            if (_localServer)
+            if (_networkSettings.IsServer)
                 _server?.Update();
             else
                 _client?.Update();
@@ -115,7 +115,7 @@ public class Game1 : Game
     
     protected override void UnloadContent()
     {
-        if (_localServer) 
+        if (_networkSettings.IsServer) 
             _server?.StopServer();
         else 
             _client?.StopClient();
@@ -160,7 +160,7 @@ public class Game1 : Game
 
     private void SendMessage(string message)
     {
-        if (_localServer)
+        if (_networkSettings.IsServer)
         {
             _server.BroadcastMessage(message);
         }

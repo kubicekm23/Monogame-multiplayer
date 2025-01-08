@@ -1,5 +1,4 @@
 ﻿using System;
-using experimental_chat;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -13,9 +12,7 @@ public class Game1 : Game
     private Server _server;
     private Client _client;
 
-    private bool _localServer = false;   // podle toho jestli tento počítač bude server
-    private string _serverPassword = "HesloHeslo";
-    private string _serverIP = "127.0.0.1";
+    private NetworkSettings _networkSettings;
 
     public Game1()
     {
@@ -23,8 +20,10 @@ public class Game1 : Game
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
         
-        if (_localServer) { Window.Title = "Game server"; }
-        else {Window.Title = "Game client";}
+        _networkSettings = new NetworkSettings("127.0.0.1", 9050, false, "Heslo");  // default hodnoty
+
+        if (_networkSettings.IsServer) { Window.Title = "Chat server"; }
+        else {Window.Title = "Chat client";}
         
         _graphics.PreferredBackBufferWidth = 1280;
         _graphics.PreferredBackBufferHeight = 720;
@@ -34,8 +33,8 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        if (_localServer) _server = new Server(_serverPassword);
-        else _client = new Client(_serverPassword, _serverIP);
+        try { if (_networkSettings.IsServer) _server = new Server(_networkSettings.Password, _networkSettings.Port);else _client = new Client(_networkSettings.Password, _networkSettings.HostIP); }
+        catch (Exception e) { Console.WriteLine($"Failed to initialize network: {e.Message}"); Exit(); }
         
         base.Initialize();
     }
@@ -52,23 +51,21 @@ public class Game1 : Game
         var KeyboardState = Keyboard.GetState();
         
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-            Keyboard.GetState().IsKeyDown(Keys.Escape))
-        {
-            Exit();
-        }
+            Keyboard.GetState().IsKeyDown(Keys.Escape)) { Exit(); }
         
         try
         {
-            if (_localServer)
-                _server?.Update();
-            else
-                _client?.Update();
+            if (_networkSettings.IsServer) _server?.Update();
+            else _client?.Update();
         }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Network error: {e.Message}");
-        }
+        catch (Exception e) { Console.WriteLine($"Network error: {e.Message}"); }
 
+        // continue code from here
+        
+        
+        
+        
+        
         base.Update(gameTime);
     }
 
@@ -83,10 +80,8 @@ public class Game1 : Game
     
     protected override void UnloadContent()
     {
-        if (_localServer) 
-            _server?.StopServer();
-        else 
-            _client?.StopClient();
+        if (_networkSettings.IsServer) _server?.StopServer();
+        else _client?.StopClient();
             
         base.UnloadContent();
     }

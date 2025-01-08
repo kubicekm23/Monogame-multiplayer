@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using LiteNetLib;
 using LiteNetLib.Utils;
@@ -73,11 +74,12 @@ public class Server : IDisposable
     private readonly NetManager server;
     private bool isRunning = false;
     private bool isDisposed = false;
+    private int port;
 
-    public Server(string password)
+    public Server(string password, int port)
     {
         server = new NetManager(listener);
-        if (!server.Start(9050))
+        if (!server.Start(port))
             throw new Exception("Failed to start server");
             
         listener.ConnectionRequestEvent += request =>
@@ -157,5 +159,38 @@ public class Server : IDisposable
             isDisposed = true;
         }
         GC.SuppressFinalize(this);
+    }
+}
+
+struct NetworkSettings
+{
+    public string HostIP;
+    public int Port;
+    public bool IsServer;
+    public string Password;
+    
+    public NetworkSettings(string IP, int port, bool isServer, string password)
+    {
+        HostIP = IP;
+        Port = port;
+        IsServer = isServer;
+        Password = password;
+
+        if (!File.Exists("network_settings.txt"))
+        {
+            File.WriteAllText("network_settings.txt", $"{HostIP}\n{Port}\n{Password}\n{IsServer}");
+        }
+        else
+        {
+            string[] lines = File.ReadAllLines("NetworkSettings.txt");
+            HostIP = lines[0];
+            Port = int.Parse(lines[1]);
+            Password = lines[2];
+            if (lines[3] == "true") isServer = true;
+            else isServer = false;
+        }
+        
+        Console.WriteLine($"Using the following network settings");
+        Console.WriteLine($"Adress: {HostIP}:{Port}"); Console.WriteLine($"Password: {Password}"); Console.WriteLine($"Runs as server: {isServer}");
     }
 }
