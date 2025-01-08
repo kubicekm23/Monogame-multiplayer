@@ -21,7 +21,7 @@ public class textInputBox
         _font = font;
         _position = position;
         
-        _rectangle = new Rectangle((int)position.X + 15, (int)position.Y + 15, width, height);
+        _rectangle = new Rectangle((int)position.X - 15, (int)position.Y - 15, width, height);
     }
 
     public void Draw(SpriteBatch spriteBatch)
@@ -41,7 +41,8 @@ public class textInputBox
 
     public void DelLetter()
     {
-        _text.Remove(_text.Length - 1, 1);
+        if (_text.Length > 0)
+        _text = _text.Remove(_text.Length - 1, 1);
     }
 
     public string GetText()

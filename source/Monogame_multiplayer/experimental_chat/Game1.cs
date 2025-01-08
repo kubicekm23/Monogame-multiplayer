@@ -13,7 +13,7 @@ public class Game1 : Game
     private Server _server;
     private Client _client;
 
-    private bool _localServer = true;   // podle toho jestli tento počítač bude server
+    private bool _localServer = false;   // podle toho jestli tento počítač bude server
     private string _serverPassword = "HesloHeslo";
     private string _serverIP = "127.0.0.1";
     
@@ -59,7 +59,7 @@ public class Game1 : Game
 
         _font = Content.Load<SpriteFont>("font");
         
-        _inputBox = new textInputBox(new Vector2(200, 400), GraphicsDevice, 600, 200, _font);
+        _inputBox = new textInputBox(new Vector2(200, 400), GraphicsDevice, 600, 50, _font);
     }
 
     protected override void Update(GameTime gameTime)
