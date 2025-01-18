@@ -24,7 +24,7 @@ public class Game1 : Game
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
         
-        _networkSettings = new NetworkSettings("127.0.0.1", 9050, false, "Heslo");  // default hodnoty
+        _networkSettings = new NetworkSettings("127.0.0.1", 9050, false, "heslo");  // default hodnoty
 
         if (_networkSettings.IsServer) { Window.Title = "Chat server"; }
         else {Window.Title = "Chat client";}
